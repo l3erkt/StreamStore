@@ -25,9 +25,9 @@ def delivery_report(err, msg):
 # Sample order message
 order = {
     "order_id": str(uuid.uuid4()),    # Generate a unique order ID
-    "user": "nana",                   # Customer name
-    "item": "mushroom pizza",         # Item ordered
-    "quantity": 2                     # Number of items ordered
+    "user": "nicole",                   # Customer name
+    "item": "chicken bowl",         # Item ordered
+    "quantity": 1                     # Number of items ordered
 }
 
 # Convert the Python dictionary to JSON bytes
