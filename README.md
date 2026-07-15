@@ -1,5 +1,6 @@
 <div align="center">
 
+![Wave](https://cdn.dribbble.com/userupload/22465007/file/original-43f5b5877f49265110c9cbc137ce37eb.gif)
 # 🚀 StreamStore
 
 ### Real-Time Order Processing Pipeline with Apache Kafka, Docker & Streamlit
