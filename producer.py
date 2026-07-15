@@ -1,5 +1,5 @@
 import uuid                           # Generates unique IDs
-from streamlit import json            # JSON library (typically use Python's built-in json module)
+import json      
 from confluent_kafka import Producer  # Kafka producer client
 
 # Kafka producer configuration
@@ -18,6 +18,7 @@ def delivery_report(err, msg):
     else:
         # Print success message
         print(f"Delivered {msg.value().decode('utf-8')}")
+        print(f"delivered to {msg.topic()} [{msg.partition()}] at offset {msg.offset()}")
              
 
 
