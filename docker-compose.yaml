@@ -1,0 +1,51 @@
+version: '3'                       # version
+
+services:
+  kafka:                           # Name of the Kafka service
+    image: confluentinc/cp-kafka:latest   # Official Confluent Kafka image
+    container_name: kafka          # Container name
+
+    ports:
+      - "9092:9092"                # Expose Kafka broker to the host
+
+    environment:
+      # Enable KRaft mode
+      KAFKA_KRAFT_MODE: "true"
+
+      # Unique ID for the Kafka cluster
+      CLUSTER_ID: "my-cluster-id"
+
+      # Unique ID for this Kafka node
+      KAFKA_NODE_ID: 1
+
+      # This node acts as both broker and controller
+      KAFKA_PROCESS_ROLES: broker,controller
+
+      # List of controller quorum members
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
+
+      # Internal topic replication factor [A COPY OF THE METADATA]
+      # Must be 1 for a single-node cluster
+      KAFKA_OFFSET_TOPIC_REPLICATION_FACTOR: 1
+
+      # Network listeners
+      # PLAINTEXT = client connections
+      # CONTROLLER = controller communication
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+
+      # Address clients use to reach Kafka
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+
+      # Specify which listener is used for controller traffic
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+
+      # Directory where Kafka stores logs and metadata
+      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
+
+    volumes:
+      # Persist Kafka data outside the container
+      - kafka_kraft:/var/lib/kafka/data
+
+# Define the named volume
+volumes:
+  kafka_kraft:
