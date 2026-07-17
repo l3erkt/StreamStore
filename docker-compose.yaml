@@ -1,143 +1,117 @@
 
 services:
-  broker1:                           # Name of the broker service
-    image: confluentinc/cp-kafka:latest   # Official Confluent Kafka image version
-    container_name: broker1          # broker name alias
-
-    hostname: broker1                # Set hostname for the container
+  broker1:
+    image: confluentinc/cp-kafka:latest
+    container_name: broker1
+    hostname: broker1
 
     ports:
-      - "9092:9092"                  # Expose Kafka broker to the host
+      - "19092:19092"                  # External/host access port for this broker
 
     environment:
-      # Enable KRaft mode
-      KAFKA_KRAFT_MODE: "true"
+      CLUSTER_ID: "kNEkcJ_tTa6SJ4SP08w6Vg"   # Valid base64url KRaft cluster ID
 
-      # Unique ID for the service cluster
-      CLUSTER_ID: "my-cluster-id"
-
-      # Unique ID for this broker node
       KAFKA_NODE_ID: 1
 
       # This node acts as both broker and controller
       KAFKA_PROCESS_ROLES: broker,controller
 
-      # List of controller quorum members
-      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@broker1:9093, 2@broker2:9093, 3@broker3:9093"
+      # List of controller quorum members (NO spaces after commas)
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@broker1:9093,2@broker2:9093,3@broker3:9093"
 
-      # Specify which listener is used for controller traffic
+      # Three listeners: PLAINTEXT (inter-broker), CONTROLLER (quorum), EXTERNAL (host access)
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093,EXTERNAL://0.0.0.0:19092
+
+      # Inter-broker traffic uses the container hostname (resolvable on the docker network)
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
 
-      # Network listeners
-      # PLAINTEXT = client connections
-      # CONTROLLER = controller communication
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      # Advertised addresses: PLAINTEXT for other brokers, EXTERNAL for host clients
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker1:9092,EXTERNAL://localhost:19092
 
-      # Address clients use to reach Kafka
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      # Log dir now matches the mounted volume path below
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
 
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-
-      # Directory where Kafka stores logs and metadata in docker
-      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
-
-      # Internal topic replication factor [A COPY OF THE METADATA]
-      # Must be 1 for a single-node cluster
       KAFKA_OFFSET_TOPIC_REPLICATION_FACTOR: 3
-
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
-
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
 
-
     volumes:
-      # Persist Kafka data outside the container
       - broker1-data:/var/lib/kafka/data
 
 
 
+  broker2:
+    image: confluentinc/cp-kafka:latest
+    container_name: broker2
+    hostname: broker2
 
-  broker2:  
-
-    image: confluentinc/cp-kafka:latest   
-    container_name: broker2          
-    hostname: broker2                
     ports:
-      - "9093:9093"                  
+      - "19093:19093"
 
     environment:
-      KAFKA_KRAFT_MODE: "true"
-
-      CLUSTER_ID: "my-cluster-id"
+      CLUSTER_ID: "kNEkcJ_tTa6SJ4SP08w6Vg"
 
       KAFKA_NODE_ID: 2
 
       KAFKA_PROCESS_ROLES: broker,controller
 
-      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@broker1:9093, 2@broker2:9093, 3@broker3:9093"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@broker1:9093,2@broker2:9093,3@broker3:9093"
 
-      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
-
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093,EXTERNAL://0.0.0.0:19093
 
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
 
-      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker2:9092,EXTERNAL://localhost:19093
+
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
 
       KAFKA_OFFSET_TOPIC_REPLICATION_FACTOR: 3
-
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
-
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
-
 
     volumes:
       - broker2-data:/var/lib/kafka/data
-  
-  broker3:  
 
-    image: confluentinc/cp-kafka:latest  
-    container_name: broker3          
-    hostname: broker3                
+
+
+  broker3:
+    image: confluentinc/cp-kafka:latest
+    container_name: broker3
+    hostname: broker3
+
     ports:
-      - "9094:9094"                  
-
+      - "19094:19094"
 
     environment:
-      KAFKA_KRAFT_MODE: "true"
-
-      CLUSTER_ID: "my-cluster-id"
+      CLUSTER_ID: "kNEkcJ_tTa6SJ4SP08w6Vg"
 
       KAFKA_NODE_ID: 3
 
       KAFKA_PROCESS_ROLES: broker,controller
 
-      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@broker1:9093, 2@broker2:9093, 3@broker3:9093"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@broker1:9093,2@broker2:9093,3@broker3:9093"
 
-      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
-
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093,EXTERNAL://0.0.0.0:19094
 
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
 
-      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker3:9092,EXTERNAL://localhost:19094
+
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
 
       KAFKA_OFFSET_TOPIC_REPLICATION_FACTOR: 3
-
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
-
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
-
 
     volumes:
       - broker3-data:/var/lib/kafka/data
 
-
-# Define the named volume
 volumes:
   broker1-data:
   broker2-data:
