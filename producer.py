@@ -4,7 +4,7 @@ from confluent_kafka import Producer  # Kafka producer client
 
 # Kafka producer configuration
 producer_config = {
-    'bootstrap.servers': 'localhost:9092'   # Address of the Kafka broker
+    'bootstrap.servers': 'localhost:9092,localhost:9093,localhost:9094'  # Address of the Kafka broker
 }
 
 # Create a Kafka producer instance

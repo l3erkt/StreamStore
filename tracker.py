@@ -5,8 +5,7 @@ from confluent_kafka import TopicPartition
 
 consumer_config = {
     # Address of the Kafka broker
-    'bootstrap.servers': 'localhost:9092',  
-    # Consumer group ID
+    'bootstrap.servers': 'localhost:9092,localhost:9093,localhost:9094',   # Consumer group ID
     'group.id': 'order-tracker',
     # Start reading from the earliest message
     'auto.offset.reset': 'earliest'  

@@ -1,24 +1,37 @@
-*** CLI NOTES ***
+*** CLI NOTES [DOCKER] ***
 
-1. TO VIEW THE LIST OF ALL THE TOPICS THAT KAFKA IS KEEPING TRACK OF UTILZE THIS CLI.
-"docker exec -it kafka kafka-topics --list --{bootstrap-server localhost:9092}"
-
-
-2. LISTS THE CONFIGURATION PROPERTIES AND VALUES FOR THE TOPIC.
-"docker exec -it kafka kafka-topics --{bootstrap-server localhost:9092} --descirbe --topic orders"
+1. BRINGS CLUSTER DOWN COMPLETELEY 
+docker compose down -v
 
 
+2. STARTS NEW CLUSTER
+docker compose up -d
+
+
+3. VIEWS CLUSTERS
+docker ps
+
+4. REMOVE A BROKER FROM CONTAINER
+docker rm -f [BROKER_NAME]
 
 
 
-3. 
-VIEW LIST OF ORDERS VIA KAFKA CLI
-docker exec -it kafka kafka-console-consumer --bootstrap-server localhost:9092 --topic orders --from-beginning
+*** CLI NOTES [KAFKA] ***
 
-
-docker exec -it kafka kafka-console-consumer \
+1. CREATE TOPIC MANUALLY 
+docker exec broker1 kafka-topics \
   --bootstrap-server localhost:9092 \
+  --create \
   --topic orders \
-  --partition 0 \
-  --offset 0 \
-  --timeout-ms 5000
+  --partitions 6 \
+  --replication-factor 3
+
+  EX. --partitions 6: Basically tells Kafka split this topic into six pertiitions
+      --replication-factor 3: Bascially stores copies of every partition
+
+      "Go inside the broker1 container, connect to the Kafka cluster through Broker 1, and create a topic named orders that has 6 partitions, with each partition replicated across all 3 brokers."
+
+
+
+
+
